@@ -20,16 +20,27 @@ describe('Issues Resource', () => {
   });
 
   describe('Update', () => {
-    it('should call API passing params', () => {
+    describe('Returning success response', () => {
       const issueId = 1;
       const statusId = 1;
+      let updated: boolean;
+      beforeAll(async () => {
+        put.mockReturnValue(Promise.resolve({ status: 200 }));
 
-      resource.update(issueId, { statusId });
-      expect(put).toHaveBeenCalledTimes(1);
-      expect(put).toHaveBeenCalledWith(`issues/${issueId}.json`, {
-        issue: {
-          status_id: statusId,
-        },
+        updated = await resource.update(issueId, { statusId });
+      });
+
+      it('should return true response', () => {
+        expect(updated).toBe(true);
+      });
+
+      it('should call API passing params', () => {
+        expect(put).toHaveBeenCalledTimes(1);
+        expect(put).toHaveBeenCalledWith(`issues/${issueId}.json`, {
+          issue: {
+            status_id: statusId,
+          },
+        });
       });
     });
   });

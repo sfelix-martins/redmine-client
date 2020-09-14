@@ -1,11 +1,13 @@
 import axios from 'axios';
 
 import { RedmineClient } from '../../src';
+import { TimeEntry } from '../../src/contracts/resources/time-entries';
 import { TimeEntriesResource } from '../../src/resources/time-entries/index';
 
 jest.mock('axios');
 
 const post = axios.post as jest.MockedFunction<typeof axios.post>;
+const get = axios.get as jest.MockedFunction<typeof axios.get>;
 
 describe('Time Entries Resource', () => {
   let resource: TimeEntriesResource;
@@ -19,13 +21,51 @@ describe('Time Entries Resource', () => {
     resource = new TimeEntriesResource(client);
   });
 
+  describe('List', () => {
+    let mockTimeEntries: TimeEntry[] = [
+      {
+        hours: 1,
+      },
+      {
+        hours: 2.33,
+      },
+    ];
+    let timeEntries: TimeEntry[];
+    beforeAll(async () => {
+      get.mockReturnValue(
+        Promise.resolve({ data: { time_entries: mockTimeEntries } })
+      );
+      timeEntries = await resource.list({
+        from: new Date(2020, 9, 1),
+        to: new Date(2020, 9, 1),
+        userId: 'me',
+      });
+    });
+
+    it('should call API passing params', () => {
+      expect(get).toHaveBeenCalledTimes(1);
+      expect(get).toHaveBeenCalledWith('time_entries.json', {
+        params: {
+          from: '2020-10-01',
+          to: '2020-10-01',
+          user_id: 'me',
+        },
+      });
+    });
+
+    it('should return time entries', () => {
+      expect(timeEntries).toStrictEqual(mockTimeEntries);
+    });
+  });
+
   describe('Create', () => {
     beforeEach(() => {
       post.mockReset();
+      post.mockReturnValue(Promise.resolve({ status: 201 }));
     });
 
     describe('For issue', () => {
-      it('should call API passing params', () => {
+      it('should call API passing params', async () => {
         const data = {
           hours: 1,
           issueId: 1,
@@ -34,7 +74,9 @@ describe('Time Entries Resource', () => {
           spentOn: new Date(2020, 0, 1),
         };
 
-        resource.create(data);
+        const created = await resource.create(data);
+
+        expect(created).toBe(true);
         expect(post).toHaveBeenCalledTimes(1);
         expect(post).toHaveBeenCalledWith(`time_entries.json`, {
           time_entry: {
@@ -49,7 +91,7 @@ describe('Time Entries Resource', () => {
     });
 
     describe('For project', () => {
-      it('should call API passing params', () => {
+      it('should call API passing params', async () => {
         const data = {
           hours: 1,
           projectId: 1,
@@ -58,7 +100,8 @@ describe('Time Entries Resource', () => {
           spentOn: new Date(2020, 2, 2),
         };
 
-        resource.create(data);
+        const created = await resource.create(data);
+        expect(created).toBe(true);
         expect(post).toHaveBeenCalledTimes(1);
         expect(post).toHaveBeenCalledWith(`time_entries.json`, {
           time_entry: {

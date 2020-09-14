@@ -1,99 +1,97 @@
-# TSDX User Guide
+<h1 align="center">Welcome to Node Redmine API Client 👋</h1>
+<p>
+  <img alt="Version" src="https://img.shields.io/badge/version-0.1.0-blue.svg?cacheSeconds=2592000" />
+  <img src="https://img.shields.io/badge/node-%3E%3D10-blue.svg" />
+  <a href="#" target="_blank">
+    <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg" />
+  </a>
+</p>
 
-Congrats! You just saved yourself hours of work by bootstrapping this project with TSDX. Let’s get you oriented with what’s here and how to use it.
+> A NodeJS API client to Redmine REST API
 
-> This TSDX setup is meant for developing libraries (not apps!) that can be published to NPM. If you’re looking to build a Node app, you could use `ts-node-dev`, plain `ts-node`, or simple `tsc`.
+## Prerequisites
 
-> If you’re new to TypeScript, checkout [this handy cheatsheet](https://devhints.io/typescript)
+- node >=10
 
-## Commands
+## Install
 
-TSDX scaffolds your new library inside `/src`.
-
-To run TSDX, use:
-
-```bash
-npm start # or yarn start
+```sh
+yarn add redmine-api-client
 ```
 
-This builds to `/dist` and runs the project in watch mode so any edits you save inside `src` causes a rebuild to `/dist`.
+## Usage
 
-To do a one-off build, use `npm run build` or `yarn build`.
+Create an instance of `RedmineClient` to access the resources. E.g.:
 
-To run tests, use `npm test` or `yarn test`.
+```ts
+import { RedmineClient } from 'redmine-api-client';
 
-## Configuration
-
-Code quality is set up for you with `prettier`, `husky`, and `lint-staged`. Adjust the respective fields in `package.json` accordingly.
-
-### Jest
-
-Jest tests are set up to run with `npm test` or `yarn test`.
-
-#### Setup Files
-
-This is the folder structure we set up for you:
-
-```txt
-/src
-  index.tsx       # EDIT THIS
-/test
-  blah.test.tsx   # EDIT THIS
-.gitignore
-package.json
-README.md         # EDIT THIS
-tsconfig.json
+// Create an instance passing your Redmine host and the username and password credentials
+// Only Basic authentication is supported for now
+const client = new RedmineClient('http://redmine.yourhost.com', {
+  username: 'test',
+  password: 'secret',
+});
 ```
 
-### Rollup
+### Resources
 
-TSDX uses [Rollup](https://rollupjs.org) as a bundler and generates multiple rollup configs for various module formats and build settings. See [Optimizations](#optimizations) for details.
+All resources accepts the params from [Redmine docs](https://www.redmine.org/projects/redmine/wiki/Rest_Issues#Updating-an-issue) in camelCase.
 
-### TypeScript
+#### Issues
 
-`tsconfig.json` is set up to interpret `dom` and `esnext` types, as well as `react` for `jsx`. Adjust according to your needs.
-
-## Continuous Integration
-
-### GitHub Actions
-
-A simple action is included that runs these steps on all pushes:
-
-- Installs deps w/ cache
-- Lints, tests, and builds
-
-## Optimizations
-
-Please see the main `tsdx` [optimizations docs](https://github.com/palmerhq/tsdx#optimizations). In particular, know that you can take advantage of development-only optimizations:
-
-```js
-// ./types/index.d.ts
-declare var __DEV__: boolean;
-
-// inside your code...
-if (__DEV__) {
-  console.log('foo');
-}
+```ts
+// Updating an issue
+const issue = 123;
+const params = {
+  statusId: 1,
+};
+client.issues().update(issue, params);
 ```
 
-You can also choose to install and use [invariant](https://github.com/palmerhq/tsdx#invariant) and [warning](https://github.com/palmerhq/tsdx#warning) functions.
+#### Time Entries
 
-## Module Formats
+```ts
+// Listing time entries
+const listParams = {
+  offset: 1,
+  limit: 100,
+  projectId: 10,
+  from: new Date(2020, 1, 1),
+  to: new Date(2020, 1, 1),
+  userId: 'me',
+};
+const timeEntries = client.timeEntries().list(listParams);
 
-CJS, ESModules, and UMD module formats are supported.
+// Time entry creation
+const params = {
+  spentOn: new Date(2020, 2, 2),
+  hours: 1,
+  activityId: 2,
+  comments: 'Testing redmine client',
+  issueId: 10,
+};
+client.timeEntries().create(params);
+```
 
-The appropriate paths are configured in `package.json` and `dist/index.js` accordingly. Please report if any issues are found.
+## Links
 
-## Named Exports
+Redmine wiki page: http://www.redmine.org/projects/redmine/wiki/Rest_api
 
-Per Palmer Group guidelines, [always use named exports.](https://github.com/palmerhq/typescript#exports) Code split inside your React app instead of your React library.
+## Author
 
-## Including Styles
+👤 **Samuel Martins**
 
-There are many ways to ship styles, including with CSS-in-JS. TSDX has no opinion on this, configure how you like.
+- Github: [@sfelix-martins](https://github.com/sfelix-martins)
 
-For vanilla CSS, you can include it at the root directory and add it to the `files` section in your `package.json`, so that it can be imported separately by your users and run through their bundler's loader.
+## 🤝 Contributing
 
-## Publishing to NPM
+Contributions, issues and feature requests are welcome!<br />Feel free to check [issues page](https://github.com/sfelix-martins/redmine-client/issues).
 
-We recommend using [np](https://github.com/sindresorhus/np).
+## Show your support
+
+Give a ⭐️ if this project helped you!
+
+---
+
+_This README was generated with ❤️ by [readme-md-generator](https://github.com/kefranabg/readme-md-generator)_
