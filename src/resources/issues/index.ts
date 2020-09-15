@@ -1,7 +1,38 @@
-import { UpdateIssueParams } from '../../contracts/resources/issues';
+import {
+  Issue,
+  ListIssuesParams,
+  ListIssuesResponse,
+  NotParsedListIssuesResponse,
+  UpdateIssueParams,
+} from '../../contracts/resources/issues';
+import { objKeysFromSnakeToCamelCase } from '../../utils/case-converter';
 import { BaseResource } from '../base-resource';
 
 export class IssuesResource extends BaseResource {
+  public async list(params?: ListIssuesParams): Promise<ListIssuesResponse> {
+    if (params) {
+      params = this.prepareParams(params);
+    }
+
+    const { data } = await this.api.get<NotParsedListIssuesResponse>(
+      'issues.json',
+      {
+        params,
+      }
+    );
+
+    const issues = data.issues.map(issue =>
+      objKeysFromSnakeToCamelCase<Issue>(issue)
+    );
+
+    return {
+      issues,
+      totalCount: data.total_count,
+      limit: data.limit,
+      offset: data.offset,
+    };
+  }
+
   public async update(
     issueId: number,
     params: Partial<UpdateIssueParams>

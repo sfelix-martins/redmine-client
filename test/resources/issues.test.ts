@@ -1,11 +1,13 @@
 import axios from 'axios';
 
 import { RedmineClient } from '../../src';
-import { IssuesResource } from './../../src/resources/issues/index';
+import { ListIssuesResponse } from '../../src/contracts/resources/issues';
+import { IssuesResource } from '../../src/resources/issues';
 
 jest.mock('axios');
 
 const put = axios.put as jest.MockedFunction<typeof axios.put>;
+const get = axios.get as jest.MockedFunction<typeof axios.get>;
 
 describe('Issues Resource', () => {
   let resource: IssuesResource;
@@ -17,6 +19,145 @@ describe('Issues Resource', () => {
   beforeAll(() => {
     client = new RedmineClient(host, { username, password });
     resource = new IssuesResource(client);
+  });
+
+  describe('List', () => {
+    let listIssuesResponse = {
+      issues: [
+        {
+          id: 4512,
+          project: {
+            id: 43,
+            name: 'Poppy Cofrinho Online',
+          },
+          tracker: {
+            id: 4,
+            name: 'Desenvolvimento',
+          },
+          status: {
+            id: 3,
+            name: 'Em Execução',
+          },
+          priority: {
+            id: 2,
+            name: 'Normal',
+          },
+          author: {
+            id: 56,
+            name: 'Samuel Felix Martins',
+          },
+          assigned_to: {
+            id: 56,
+            name: 'Samuel Felix Martins',
+          },
+          fixed_version: {
+            id: 147,
+            name: 'Sprint III -(24/08 até 14/09/2020)',
+          },
+          subject: 'Testes das funcionalidades da Sprint III',
+          description: '',
+          start_date: '2020-09-14',
+          due_date: null,
+          done_ratio: 0,
+          is_private: false,
+          estimated_hours: null,
+          custom_fields: [
+            {
+              id: 9,
+              name: 'Referência',
+              value: '',
+            },
+            {
+              id: 10,
+              name: 'Nível de Complexidade',
+              value: '',
+            },
+          ],
+          created_on: '2020-09-14T08:24:03Z',
+          updated_on: '2020-09-14T08:24:03Z',
+          closed_on: null,
+        },
+      ],
+      total_count: 1,
+      offset: 0,
+      limit: 1,
+    };
+
+    let mockListIssuesResponse: ListIssuesResponse = {
+      issues: [
+        {
+          id: 4512,
+          project: {
+            id: 43,
+            name: 'Poppy Cofrinho Online',
+          },
+          tracker: {
+            id: 4,
+            name: 'Desenvolvimento',
+          },
+          status: {
+            id: 3,
+            name: 'Em Execução',
+          },
+          priority: {
+            id: 2,
+            name: 'Normal',
+          },
+          author: {
+            id: 56,
+            name: 'Samuel Felix Martins',
+          },
+          assignedTo: {
+            id: 56,
+            name: 'Samuel Felix Martins',
+          },
+          fixedVersion: {
+            id: 147,
+            name: 'Sprint III -(24/08 até 14/09/2020)',
+          },
+          subject: 'Testes das funcionalidades da Sprint III',
+          description: '',
+          startDate: '2020-09-14',
+          dueDate: null,
+          doneRatio: 0,
+          isPrivate: false,
+          estimatedHours: null,
+          customFields: [
+            {
+              id: 9,
+              name: 'Referência',
+              value: '',
+            },
+            {
+              id: 10,
+              name: 'Nível de Complexidade',
+              value: '',
+            },
+          ],
+          createdOn: '2020-09-14T08:24:03Z',
+          updatedOn: '2020-09-14T08:24:03Z',
+          closedOn: null,
+        },
+      ],
+      totalCount: 1,
+      offset: 0,
+      limit: 1,
+    };
+
+    let response: ListIssuesResponse;
+    beforeAll(async () => {
+      get.mockReturnValue(Promise.resolve({ data: listIssuesResponse }));
+      response = await resource.list();
+    });
+
+    it('should call API passing params', () => {
+      expect(get).toHaveBeenCalledTimes(1);
+      expect(get).toHaveBeenCalledWith('issues.json', { params: undefined });
+    });
+
+    it('should return time entries', () => {
+      expect(mockListIssuesResponse).toStrictEqual(response);
+    });
   });
 
   describe('Update', () => {

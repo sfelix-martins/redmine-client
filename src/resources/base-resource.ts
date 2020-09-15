@@ -2,10 +2,7 @@ import { AxiosInstance } from 'axios';
 import formatDate from 'date-fns/format';
 
 import { RedmineClient } from '../redmine-client';
-import {
-  camelToSnakeCase,
-  // objKeysFromCamelToSnakeCase,
-} from '../utils/case-converter';
+import { camelToSnakeCase } from '../utils/case-converter';
 
 export abstract class BaseResource {
   protected readonly api: AxiosInstance;
