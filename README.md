@@ -16,7 +16,7 @@
 ## Install
 
 ```sh
-yarn add redmine-api-client
+yarn add @smartinsf/redmine-client
 ```
 
 ## Usage
@@ -24,7 +24,7 @@ yarn add redmine-api-client
 Create an instance of `RedmineClient` to access the resources. E.g.:
 
 ```ts
-import { RedmineClient } from 'redmine-api-client';
+import { RedmineClient } from '@smartinsf/redmine-client';
 
 // Create an instance passing your Redmine host and the username and password credentials
 // Only Basic authentication is supported for now

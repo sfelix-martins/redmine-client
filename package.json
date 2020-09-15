@@ -1,5 +1,6 @@
 {
   "version": "0.1.0",
+  "description": "A client for Redmine REST API",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -17,6 +18,19 @@
     "lint": "tsdx lint",
     "prepare": "tsdx build"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sfelix-martins/redmine-client.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sfelix-martins/redmine-client/issues"
+  },
+  "keywords": [
+    "redmine",
+    "client",
+    "rest",
+    "api"
+  ],
   "peerDependencies": {},
   "husky": {
     "hooks": {
@@ -29,7 +43,7 @@
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "name": "redmine-client",
+  "name": "@smartinsf/redmine-client",
   "author": "Samuel Martins",
   "module": "dist/redmine-client.esm.js",
   "devDependencies": {
