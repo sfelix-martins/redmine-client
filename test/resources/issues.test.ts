@@ -158,6 +158,8 @@ describe('Issues Resource', () => {
     it('should return time entries', () => {
       expect(mockListIssuesResponse).toStrictEqual(response);
     });
+
+    // TODO: Create test with parameters
   });
 
   describe('Update', () => {

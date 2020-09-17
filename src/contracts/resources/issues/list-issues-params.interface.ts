@@ -4,7 +4,7 @@ export interface ListIssuesParams extends ListParams {
   sort?: string;
   include?: ('attachments' | 'relations' | 'journals' | 'children')[];
   issueId?: number | string;
-  asignedToId?: number | 'me';
+  assignedToId?: number | 'me';
   statusId?: number;
   projectId?: number;
   subprojectId?: number;
