@@ -1,7 +1,10 @@
 import axios from 'axios';
 
 import { RedmineClient } from '../../src';
-import { TimeEntry } from '../../src/contracts/resources/time-entries';
+import {
+  ListTimeEntriesResponse,
+  TimeEntry,
+} from '../../src/contracts/resources/time-entries';
 import { TimeEntriesResource } from '../../src/resources/time-entries/index';
 
 jest.mock('axios');
@@ -30,12 +33,19 @@ describe('Time Entries Resource', () => {
         hours: 2.33,
       },
     ];
-    let timeEntries: TimeEntry[];
+    let timeEntriesResponse: ListTimeEntriesResponse;
     beforeAll(async () => {
       get.mockReturnValue(
-        Promise.resolve({ data: { time_entries: mockTimeEntries } })
+        Promise.resolve({
+          data: {
+            time_entries: mockTimeEntries,
+            total_count: 2,
+            offset: 0,
+            limit: 2,
+          },
+        })
       );
-      timeEntries = await resource.list({
+      timeEntriesResponse = await resource.list({
         from: new Date(2020, 9, 1),
         to: new Date(2020, 9, 1),
         userId: 'me',
@@ -54,7 +64,14 @@ describe('Time Entries Resource', () => {
     });
 
     it('should return time entries', () => {
-      expect(timeEntries).toStrictEqual(mockTimeEntries);
+      expect(timeEntriesResponse.timeEntries).toStrictEqual(mockTimeEntries);
+    });
+
+    it('should return the pagination data', () => {
+      const { totalCount, offset, limit } = timeEntriesResponse;
+      expect(totalCount).toBe(2);
+      expect(offset).toBe(0);
+      expect(limit).toBe(2);
     });
   });
 

@@ -1,7 +1,10 @@
 import axios from 'axios';
 
 import { RedmineClient } from '../../src';
-import { ListIssuesResponse } from '../../src/contracts/resources/issues';
+import {
+  ListIssuesParams,
+  ListIssuesResponse,
+} from '../../src/contracts/resources/issues';
 import { IssuesResource } from '../../src/resources/issues';
 
 jest.mock('axios');
@@ -144,22 +147,69 @@ describe('Issues Resource', () => {
       limit: 1,
     };
 
-    let response: ListIssuesResponse;
-    beforeAll(async () => {
-      get.mockReturnValue(Promise.resolve({ data: listIssuesResponse }));
-      response = await resource.list();
+    describe('Without params', () => {
+      let response: ListIssuesResponse;
+      beforeAll(async () => {
+        get.mockReturnValue(Promise.resolve({ data: listIssuesResponse }));
+        response = await resource.list();
+      });
+
+      it('should call API passing params', () => {
+        expect(get).toHaveBeenCalledTimes(1);
+        expect(get).toHaveBeenCalledWith('issues.json', { params: undefined });
+      });
+
+      it('should return time entries', () => {
+        expect(mockListIssuesResponse).toStrictEqual(response);
+      });
     });
 
-    it('should call API passing params', () => {
-      expect(get).toHaveBeenCalledTimes(1);
-      expect(get).toHaveBeenCalledWith('issues.json', { params: undefined });
-    });
+    describe('With params', () => {
+      let response: ListIssuesResponse;
+      const params: ListIssuesParams = {
+        assignedToId: 1,
+        include: ['attachments', 'children'],
+        issueId: 1,
+        limit: 10,
+        offset: 0,
+        parentId: 10,
+        projectId: 1,
+        sort: 'issue_id:desc',
+        statusId: 1,
+        subprojectId: 2,
+        trackerId: 32,
+      };
+      const parsedParams = {
+        assigned_to_id: 1,
+        include: ['attachments', 'children'],
+        issue_id: 1,
+        limit: 10,
+        offset: 0,
+        parent_id: 10,
+        project_id: 1,
+        sort: 'issue_id:desc',
+        status_id: 1,
+        subproject_id: 2,
+        tracker_id: 32,
+      };
+      beforeAll(async () => {
+        get.mockReset();
 
-    it('should return time entries', () => {
-      expect(mockListIssuesResponse).toStrictEqual(response);
-    });
+        get.mockReturnValue(Promise.resolve({ data: listIssuesResponse }));
+        response = await resource.list(params);
+      });
 
-    // TODO: Create test with parameters
+      it('should call API passing params', () => {
+        expect(get).toHaveBeenCalledTimes(1);
+        expect(get).toHaveBeenCalledWith('issues.json', {
+          params: parsedParams,
+        });
+      });
+
+      it('should return time entries', () => {
+        expect(mockListIssuesResponse).toStrictEqual(response);
+      });
+    });
   });
 
   describe('Update', () => {

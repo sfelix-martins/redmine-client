@@ -2,22 +2,30 @@ import {
   CreateTimeEntryParams,
   ListTimeEntriesParams,
   ListTimeEntriesResponse,
+  NotParsedListTimeEntriesResponse,
 } from '../../contracts/resources/time-entries';
-import { TimeEntry } from '../../contracts/resources/time-entries/time-entry.interface';
 import { BaseResource } from '../base-resource';
 
 export class TimeEntriesResource extends BaseResource {
-  public async list(params: ListTimeEntriesParams): Promise<TimeEntry[]> {
+  public async list(
+    params: ListTimeEntriesParams
+  ): Promise<ListTimeEntriesResponse> {
     params = this.prepareParams(params);
 
-    const { data } = await this.api.get<ListTimeEntriesResponse>(
+    const { data } = await this.api.get<NotParsedListTimeEntriesResponse>(
       'time_entries.json',
       {
         params,
       }
     );
 
-    return data.time_entries;
+    const { time_entries, total_count, ...rest } = data;
+
+    return {
+      ...rest,
+      timeEntries: time_entries,
+      totalCount: total_count,
+    };
   }
 
   public async create(params: CreateTimeEntryParams) {
